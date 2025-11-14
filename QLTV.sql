@@ -25,6 +25,11 @@ CREATE TABLE TYPEREADER
 	NAME_TYPEREADER VARCHAR(20)
 )
 
+-- Seed default TypeReader used by application (matches DefaultTypeReaderId in backend)
+INSERT INTO TYPEREADER (ID_TYPEREADER, NAME_TYPEREADER)
+VALUES ('3fa85f64-5717-4562-b3fc-2c963f66afa6', 'Reader')
+ON CONFLICT (ID_TYPEREADER) DO NOTHING;
+
 -- Bảng thể loại sách
 CREATE TABLE TYPEBOOK
 (
@@ -197,6 +202,11 @@ CREATE TABLE ROLES
 	ROLE_NAME VARCHAR(10) PRIMARY KEY,
 	DESCRIPTION TEXT,
 )
+
+-- Ensure default Reader role exists for new accounts
+INSERT INTO ROLES (ROLE_NAME, DESCRIPTION)
+VALUES ('Reader', 'Default reader role')
+ON CONFLICT (ROLE_NAME) DO NOTHING;
 
 -- Bảng permission
 CREATE TABLE PERMISSIONS
