@@ -301,7 +301,7 @@ builder.Services.AddFluentEmail(emailConfig.SenderEmail, "Library Management")
                 });
 builder.Services.AddMemoryCache();
 
-builder.Services.AddSignalR(); 
+builder.Services.AddSignalR();
 
 
 var app = builder.Build();

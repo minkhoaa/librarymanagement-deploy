@@ -13,7 +13,7 @@ namespace LibraryManagement.Service
     {
        
         private readonly IHubContext<ChatHub> _hubContext;
-        private readonly IMongoCollection<Message> _messages;
+        private readonly IMongoCollection<Message>? _messages;
         private readonly LibraryManagermentContext _context; 
 
         public MessageRepository(IConfiguration configuration, IHubContext<ChatHub> hubContext, LibraryManagermentContext context )
@@ -22,15 +22,26 @@ namespace LibraryManagement.Service
             var databaseName = configuration["MongoDB:DatabaseName"];
             var collectionName = configuration["MongoDB:MessagesCollection"];
 
-            var client = new MongoClient(connectionString);
-            var database = client.GetDatabase(databaseName);
-            _messages = database.GetCollection<Message>(collectionName);
+            databaseName = string.IsNullOrWhiteSpace(databaseName) ? "LibraryChat" : databaseName;
+            collectionName = string.IsNullOrWhiteSpace(collectionName) ? "Messages" : collectionName;
+
+            if (!string.IsNullOrWhiteSpace(connectionString))
+            {
+                var client = new MongoClient(connectionString);
+                var database = client.GetDatabase(databaseName);
+                _messages = database.GetCollection<Message>(collectionName);
+                EnsureIndexes();
+            }
+            else
+            {
+                _messages = null;
+            }
             _hubContext = hubContext;
             _context = context;
-            EnsureIndexes();
         }
         private void EnsureIndexes()
         {
+            if (_messages == null) return;
             var indexModels = new List<CreateIndexModel<Message>>();
             indexModels.Add(new CreateIndexModel<Message>(
                 Builders<Message>.IndexKeys
@@ -60,6 +71,7 @@ namespace LibraryManagement.Service
 
         public async Task<List<Message>> GetAllMessagesAsync(string userId1, string userId2)
         {
+            if (_messages == null) return new List<Message>();
             var filter = Builders<Message>.Filter.Or(
                 Builders<Message>.Filter.And(
                     Builders<Message>.Filter.Eq(m => m.SenderId, userId1),
@@ -78,6 +90,7 @@ namespace LibraryManagement.Service
 
         public async Task SendMessageAsync(Message message)
         {
+            if (_messages == null) return;
             message.SentAt = DateTime.UtcNow;
             await _messages.InsertOneAsync(message);
             await _hubContext.Clients.User(message.ReceiverId)
@@ -86,6 +99,7 @@ namespace LibraryManagement.Service
 
         public async Task<List<MessageClient>> getAllMessageClient(string senderId)
         {
+            if (_messages == null) return new List<MessageClient>();
             // 1. Lấy toàn bộ PartnerId unique chỉ với 1 truy vấn
             var userIds = await _messages.Aggregate()
                 .Match(m => m.SenderId == senderId || m.ReceiverId == senderId)
