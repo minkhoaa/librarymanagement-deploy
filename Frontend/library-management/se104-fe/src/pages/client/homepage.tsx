@@ -71,10 +71,16 @@ const UserHomepage = () => {
           return;
         }
 
-        const historyRes = await getLoanSlipHistoryAPI(idUser);
-        if (Array.isArray(historyRes)) {
-          setLoanHistory(historyRes.slice(0, 5));
+        let limitedHistory: ILoanHistory[] = [];
+        try {
+          const historyRes = await getLoanSlipHistoryAPI(idUser);
+          if (Array.isArray(historyRes)) {
+            limitedHistory = historyRes.slice(0, 5);
+          }
+        } catch (historyError) {
+          console.warn("Không thể tải lịch sử mượn:", historyError);
         }
+        setLoanHistory(limitedHistory);
 
         const [booksResponse, authorRes] = await Promise.all([
           getAllBooksAndCommentsAPI(),

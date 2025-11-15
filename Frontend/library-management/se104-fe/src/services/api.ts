@@ -180,7 +180,9 @@ export const getAllBooksAndCommentsAPI = () => {
   });
 };
 export const getLoanSlipHistoryAPI = (idUser: string) => {
-  const url = `/api/LoanSlipBook/getloansliphistory?idUser=${idUser}`;
+  const url = `/api/LoanSlipBook/getloansliphistory?idUser=${encodeURIComponent(
+    idUser
+  )}`;
   return axios.get<ILoanHistory[]>(url);
 };
 export const sendMessageAPI = async (payload: ISendMessagePayload) => {
