@@ -97,6 +97,8 @@ builder.Configuration["CloudinarySettings:CloudName"] = Environment.GetEnvironme
 builder.Configuration["CloudinarySettings:ApiKey"] = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY");
 builder.Configuration["CloudinarySettings:ApiSecret"] = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET");
 builder.Configuration["MongoDB:ConnectionString"] = Environment.GetEnvironmentVariable("CONNECTIONSTRINGS__MongoDbConnection");
+builder.Configuration["MongoDB:DatabaseName"] ??= Environment.GetEnvironmentVariable("MONGODB__DATABASENAME") ?? "LibraryChat";
+builder.Configuration["MongoDB:MessagesCollection"] ??= Environment.GetEnvironmentVariable("MONGODB__MESSAGESCOLLECTION") ?? "Messages";
 builder.Configuration["GOOGLE_SETTINGS:GOOGLE__CLIENT__ID"] = Environment.GetEnvironmentVariable("CLIENT__ID");
 builder.Configuration["GOOGLE_SETTINGS:GOOGLE__CLIENT__SECRET"] = Environment.GetEnvironmentVariable("CLIENT__SECRET");
 

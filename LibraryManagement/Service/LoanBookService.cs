@@ -263,17 +263,38 @@ namespace LibraryManagement.Repository
 
         public async Task<List<LoanBookHistory>> getLoanSlipBookByUser(string idReader)
         {
+            if (string.IsNullOrWhiteSpace(idReader))
+            {
+                return new List<LoanBookHistory>();
+            }
+
+            var normalizedId = idReader.Trim().ToUpper();
+
             var result = await _context.LoanSlipBooks
+                .AsNoTracking()
                 .Include(x => x.Reader)
-                .Where(x => x.IdReader == idReader)
+                .Include(x => x.TheBook)
+                    .ThenInclude(tb => tb.Book)
+                        .ThenInclude(b => b.HeaderBook)
+                            .ThenInclude(h => h.TypeBook)
+                .Include(x => x.TheBook)
+                    .ThenInclude(tb => tb.Book)
+                        .ThenInclude(b => b.images)
+                .Where(x => x.IdReader.ToUpper() == normalizedId)
                 .Select(x => new LoanBookHistory
                 {
-                    IdBook = x.TheBook.IdBook,
-                    NameBook = x.TheBook.Book.HeaderBook.NameHeaderBook,
-                    Genre = x.TheBook.Book.HeaderBook.TypeBook.NameTypeBook,
+                    IdBook = x.TheBook != null ? x.TheBook.IdBook : string.Empty,
+                    NameBook = x.TheBook != null && x.TheBook.Book != null && x.TheBook.Book.HeaderBook != null
+                        ? x.TheBook.Book.HeaderBook.NameHeaderBook
+                        : string.Empty,
+                    Genre = x.TheBook != null && x.TheBook.Book != null && x.TheBook.Book.HeaderBook != null && x.TheBook.Book.HeaderBook.TypeBook != null
+                        ? x.TheBook.Book.HeaderBook.TypeBook.NameTypeBook
+                        : string.Empty,
                     DateBorrow = x.BorrowDate,
                     DateReturn = x.ReturnDate,
-                    AvatarUrl = (x.TheBook.Book.images.FirstOrDefault() == null) ? string.Empty : x.TheBook.Book.images.FirstOrDefault()!.Url,
+                    AvatarUrl = x.TheBook != null && x.TheBook.Book != null && x.TheBook.Book.images.Any()
+                        ? x.TheBook.Book.images.FirstOrDefault()!.Url
+                        : string.Empty,
                     IsReturned = x.IsReturned
                 }).ToListAsync();
             return result;
