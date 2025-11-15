@@ -4,23 +4,24 @@ import { FaInfoCircle, FaUser, FaBook, FaCalendarAlt } from "react-icons/fa";
 import { useCurrentApp } from "@/components/context/app.context";
 import { getReceiptHistoryAPI } from "@/services/api";
 
+const hasArrayData = (value: unknown): value is { data: any[] } => {
+  if (!value || typeof value !== "object") return false;
+  const maybeData = (value as { data?: unknown }).data;
+  return Array.isArray(maybeData);
+};
+
+const normalizeReturns = (payload: unknown): IReturn[] => {
+  if (Array.isArray(payload)) return payload as IReturn[];
+  if (hasArrayData(payload)) return payload.data as IReturn[];
+  return [];
+};
+
 const UserReturns = () => {
   const { user } = useCurrentApp();
   const [returns, setReturns] = useState<IReturn[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedReturn, setSelectedReturn] = useState<IReturn | null>(null);
-  const normalizeReturns = (payload: unknown): IReturn[] => {
-    if (Array.isArray(payload)) return payload as IReturn[];
-    if (
-      payload &&
-      typeof payload === "object" &&
-      Array.isArray((payload as { data?: unknown }).data)
-    ) {
-      return ((payload as { data: IReturn[] }).data) ?? [];
-    }
-    return [];
-  };
 
   useEffect(() => {
     const fetchData = async () => {

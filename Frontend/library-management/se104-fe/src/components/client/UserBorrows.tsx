@@ -4,6 +4,18 @@ import { getLoanSlipHistoryAPI, getBookAndCommentsByIdAPI } from "@/services/api
 import { useCurrentApp } from "@/components/context/app.context";
 import { FaInfoCircle, FaUser, FaCalendarAlt } from "react-icons/fa";
 
+const hasArrayData = (value: unknown): value is { data: any[] } => {
+  if (!value || typeof value !== "object") return false;
+  const maybeData = (value as { data?: unknown }).data;
+  return Array.isArray(maybeData);
+};
+
+const normalizeLoanHistory = (payload: unknown): ILoanHistory[] => {
+  if (Array.isArray(payload)) return payload as ILoanHistory[];
+  if (hasArrayData(payload)) return payload.data as ILoanHistory[];
+  return [];
+};
+
 const UserBorrows = () => {
   const { user } = useCurrentApp();
   const [loans, setLoans] = useState<ILoanHistory[]>([]);
@@ -11,18 +23,6 @@ const UserBorrows = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedLoan, setSelectedLoan] = useState<ILoanHistory | null>(null);
   const [authorNames, setAuthorNames] = useState<Record<string, string>>({});
-
-  const normalizeLoanHistory = (payload: unknown): ILoanHistory[] => {
-    if (Array.isArray(payload)) return payload as ILoanHistory[];
-    if (
-      payload &&
-      typeof payload === "object" &&
-      Array.isArray((payload as { data?: unknown }).data)
-    ) {
-      return ((payload as { data: ILoanHistory[] }).data) ?? [];
-    }
-    return [];
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,12 +61,8 @@ const UserBorrows = () => {
       let bookDetail: any = null;
       if (Array.isArray(res)) {
         bookDetail = res[0];
-      } else if (
-        res &&
-        typeof res === "object" &&
-        Array.isArray((res as { data?: unknown }).data)
-      ) {
-        bookDetail = (res as { data: any[] }).data[0];
+      } else if (hasArrayData(res)) {
+        bookDetail = res.data[0];
       } else {
         bookDetail = (res as any)?.data ?? res;
       }

@@ -10,6 +10,18 @@ import UpdateAuthorModal from "../user/UpdateAuthorModal";
 interface Props {
   keyword: string;
 }
+const hasArrayData = (value: unknown): value is { data: any[] } => {
+  if (!value || typeof value !== "object") return false;
+  const maybeData = (value as { data?: unknown }).data;
+  return Array.isArray(maybeData);
+};
+
+const extractArray = <T,>(payload: unknown): T[] => {
+  if (Array.isArray(payload)) return payload as T[];
+  if (hasArrayData(payload)) return payload.data as T[];
+  return [];
+};
+
 const AuthorList = ({ keyword }: Props) => {
   const [authors, setAuthors] = useState<IAddAuthor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,12 +38,8 @@ const AuthorList = ({ keyword }: Props) => {
     const fetchTypeBooks = async () => {
       try {
         const res = await getTypeBooksAPI();
-        const data = Array.isArray(res)
-          ? res
-          : (res && typeof res === "object" && Array.isArray((res as any).data)
-              ? (res as any).data
-              : []);
-        if (!Array.isArray(res) && !(res && typeof res === "object" && Array.isArray((res as any).data))) {
+        const data = extractArray(res);
+        if (!Array.isArray(res) && !hasArrayData(res)) {
           message.error("Dữ liệu thể loại sách không đúng định dạng.");
         }
         const options = data.map((item: any) => ({
@@ -51,12 +59,8 @@ const AuthorList = ({ keyword }: Props) => {
     setLoading(true);
     try {
       const res = await getListAuthor();
-      const authorsList = Array.isArray(res)
-        ? res
-        : (res && typeof res === "object" && Array.isArray((res as any).data)
-            ? (res as any).data
-            : []);
-      if (!Array.isArray(res) && !(res && typeof res === "object" && Array.isArray((res as any).data))) {
+      const authorsList = extractArray<IAddAuthor>(res);
+      if (!Array.isArray(res) && !hasArrayData(res)) {
         message.error("Dữ liệu tác giả không đúng định dạng.");
       }
       setAuthors(authorsList);
