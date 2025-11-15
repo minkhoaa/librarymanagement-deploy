@@ -10,13 +10,27 @@ const resolvedBaseURL =
 const instance = axios.create({
   baseURL: resolvedBaseURL,
 });
+const refreshInstance = axios.create({
+  baseURL: resolvedBaseURL,
+});
 const handleRefreshToken = async () => {
-  const accessToken = localStorage.getItem("token");
-  const res = await instance.post("/api/Authentication/RefreshToken", {
-    accessToken,
-  });
-  if (res) return res.access_token;
-  else return null;
+  try {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken) return null;
+    const res = await refreshInstance.post("/api/Authentication/RefreshToken", {
+      refreshToken,
+    });
+    if (res && res.access_token) {
+      localStorage.setItem("token", res.access_token);
+      if (res.refreshToken) {
+        localStorage.setItem("refreshToken", res.refreshToken);
+      }
+      return res.access_token;
+    }
+    return null;
+  } catch (error) {
+    return null;
+  }
 };
 instance.interceptors.request.use(
   function (config) {
@@ -53,10 +67,9 @@ instance.interceptors.response.use(
       }
     }
 
-    if (error && error.response) {
-      return error.response;
-    }
-    return Promise.reject(error);
+    const normalizedError =
+      error?.response?.data ?? error?.response ?? error;
+    return Promise.reject(normalizedError);
   }
 );
 export default instance;
