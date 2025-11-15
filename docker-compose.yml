@@ -43,7 +43,7 @@ services:
       context: ./Frontend/library-management/se104-fe
       dockerfile: Dockerfile
       args:
-        VITE_BACKEND_URL: ${VITE_BACKEND_URL:-http://backend:8080}
+        VITE_BACKEND_URL: ${VITE_BACKEND_URL:-/api}
     container_name: library-frontend
     restart: unless-stopped
     depends_on:

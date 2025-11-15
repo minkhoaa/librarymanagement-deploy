@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const DEFAULT_API_PREFIX = "/app2-api";
+const DEFAULT_API_PREFIX = "/api";
 const backendBaseURL = import.meta.env.VITE_BACKEND_URL?.trim();
 const resolvedBaseURL =
   backendBaseURL && backendBaseURL !== "/"
