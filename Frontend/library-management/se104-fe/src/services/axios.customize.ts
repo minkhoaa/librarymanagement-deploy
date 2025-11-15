@@ -17,15 +17,23 @@ const handleRefreshToken = async () => {
   try {
     const refreshToken = localStorage.getItem("refreshToken");
     if (!refreshToken) return null;
-    const res = await refreshInstance.post("/api/Authentication/RefreshToken", {
-      refreshToken,
-    });
-    if (res && res.access_token) {
-      localStorage.setItem("token", res.access_token);
-      if (res.refreshToken) {
-        localStorage.setItem("refreshToken", res.refreshToken);
+
+    const res = await refreshInstance.post(
+      "/api/Authentication/RefreshToken",
+      JSON.stringify(refreshToken),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
-      return res.access_token;
+    );
+
+    const responseData = res?.data ?? res;
+    const newAccessToken =
+      responseData?.accessToken ?? responseData?.access_token;
+    if (newAccessToken) {
+      localStorage.setItem("token", newAccessToken);
+      return newAccessToken;
     }
     return null;
   } catch (error) {
