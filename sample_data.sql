@@ -269,12 +269,21 @@ INSERT INTO OVERDUE_REPORTDETAIL (ID_OVERDUEREPORT, ID_THEBOOK, BORROW_DATE, LAT
     ('732e9bae-9793-4bb1-b7df-cf2d4c185141', 'TB00010', '2024-03-15', 3);
 
 INSERT INTO IMAGE (ID_IMG, ID_BOOK, ID_READER, ID_AUTHOR, URL) VALUES
-    ('d81f0dad-4044-4f0d-8b04-e49a04790e22', 'B000001', NULL, NULL, 'https://cdn.example.com/books/B000001.jpg'),
-    ('69bcb6c2-c399-4ffc-b7d3-a1eaf3f4cb8d', 'B000004', NULL, NULL, 'https://cdn.example.com/books/B000004.jpg'),
-    ('f4dfae71-8621-48b1-9ce9-472bdfe96423', NULL, 'DG00008', NULL, 'https://cdn.example.com/readers/DG00008.png'),
-    ('a430e547-bfd4-4248-89bf-c583f8f44bdb', NULL, NULL, '3bf729f9-a20f-4c68-84e6-8c6714bb7a57', 'https://cdn.example.com/authors/stephen-hawking.jpg'),
-    ('b24a48cb-e775-4431-9af2-4d5527f9da3b', 'B000008', NULL, NULL, 'https://cdn.example.com/books/B000008.jpg'),
-    ('81540b80-8f71-474f-8909-277cf3dbd87c', NULL, 'DG00003', NULL, 'https://cdn.example.com/readers/DG00003.png')
+    ('d81f0dad-4044-4f0d-8b04-e49a04790e22', 'B000001', NULL, NULL, 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=600&q=80'),
+    ('6dfbe4bc-929d-4b27-8acd-7dfb7a4cde67', 'B000002', NULL, NULL, 'https://covers.openlibrary.org/b/isbn/9780062316097-L.jpg'),
+    ('4c71f863-cd67-4093-8cc9-42fbaa2ee05b', 'B000003', NULL, NULL, 'https://covers.openlibrary.org/b/isbn/9780312944926-L.jpg'),
+    ('69bcb6c2-c399-4ffc-b7d3-a1eaf3f4cb8d', 'B000004', NULL, NULL, 'https://covers.openlibrary.org/b/isbn/9780132350884-L.jpg'),
+    ('c5163171-17af-4d0d-8db7-05d00411b103', 'B000005', NULL, NULL, 'https://covers.openlibrary.org/b/isbn/9780553380163-L.jpg'),
+    ('5f36bfce-fd3f-46c5-b55a-47bb9ece688a', 'B000006', NULL, NULL, 'https://covers.openlibrary.org/b/isbn/9780307887894-L.jpg'),
+    ('53c1ff54-c401-4b9b-9da4-2c3b7306a66c', 'B000007', NULL, NULL, 'https://covers.openlibrary.org/b/isbn/9781400079278-L.jpg'),
+    ('b24a48cb-e775-4431-9af2-4d5527f9da3b', 'B000008', NULL, NULL, 'https://covers.openlibrary.org/b/isbn/9780439708180-L.jpg'),
+    ('d65e1a36-0703-4fc5-bb10-128c21ef8fd1', 'B000009', NULL, NULL, 'https://covers.openlibrary.org/b/isbn/9781476708706-L.jpg'),
+    ('bb1b288b-e9d0-4de4-b6c1-b3a1c446c766', 'B000010', NULL, NULL, 'https://covers.openlibrary.org/b/isbn/9780374533557-L.jpg'),
+    ('0e2f27c9-8b15-48b5-a4c6-0222a01d6adb', 'B000011', NULL, NULL, 'https://covers.openlibrary.org/b/isbn/9781607747307-L.jpg'),
+    ('a2da89bb-a89f-4606-9f35-e5e30c1bdb41', 'B000012', NULL, NULL, 'https://covers.openlibrary.org/b/isbn/9780375704024-L.jpg'),
+    ('f4dfae71-8621-48b1-9ce9-472bdfe96423', NULL, 'DG00008', NULL, 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80'),
+    ('a430e547-bfd4-4248-89bf-c583f8f44bdb', NULL, NULL, '3bf729f9-a20f-4c68-84e6-8c6714bb7a57', 'https://upload.wikimedia.org/wikipedia/commons/d/d4/Stephen_Hawking.StarChild.jpg'),
+    ('81540b80-8f71-474f-8909-277cf3dbd87c', NULL, 'DG00003', NULL, 'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?auto=format&fit=crop&w=400&q=80')
 ON CONFLICT (ID_IMG) DO NOTHING;
 
 INSERT INTO EVALUATE (ID_EVALUATE, ID_READER, ID_BOOK, EVA_COMMENT, EVA_STAR, CREATE_DATE) VALUES
