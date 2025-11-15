@@ -10,6 +10,17 @@ const UserReturns = () => {
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedReturn, setSelectedReturn] = useState<IReturn | null>(null);
+  const normalizeReturns = (payload: unknown): IReturn[] => {
+    if (Array.isArray(payload)) return payload as IReturn[];
+    if (
+      payload &&
+      typeof payload === "object" &&
+      Array.isArray((payload as { data?: unknown }).data)
+    ) {
+      return ((payload as { data: IReturn[] }).data) ?? [];
+    }
+    return [];
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,8 +30,18 @@ const UserReturns = () => {
       }
       try {
         const res = await getReceiptHistoryAPI(user.idReader);
-        console.log("Receipt History:", res);
-        setReturns(res || []);
+        const receiptList = normalizeReturns(res);
+        if (
+          !Array.isArray(res) &&
+          !(
+            res &&
+            typeof res === "object" &&
+            Array.isArray((res as { data?: unknown }).data)
+          )
+        ) {
+          message.error("Danh sách trả sách trả về không đúng định dạng.");
+        }
+        setReturns(receiptList);
       } catch (err) {
         message.error("Lỗi khi tải dữ liệu trả sách!");
       } finally {

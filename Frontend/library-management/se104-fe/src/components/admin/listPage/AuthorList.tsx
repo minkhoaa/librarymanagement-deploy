@@ -26,8 +26,15 @@ const AuthorList = ({ keyword }: Props) => {
     const fetchTypeBooks = async () => {
       try {
         const res = await getTypeBooksAPI();
-        console.log(res);
-        const options = res.map((item: any) => ({
+        const data = Array.isArray(res)
+          ? res
+          : (res && typeof res === "object" && Array.isArray((res as any).data)
+              ? (res as any).data
+              : []);
+        if (!Array.isArray(res) && !(res && typeof res === "object" && Array.isArray((res as any).data))) {
+          message.error("Dữ liệu thể loại sách không đúng định dạng.");
+        }
+        const options = data.map((item: any) => ({
           value: item.idTypeBook,
           label: item.nameTypeBook,
         }));
@@ -44,7 +51,15 @@ const AuthorList = ({ keyword }: Props) => {
     setLoading(true);
     try {
       const res = await getListAuthor();
-      setAuthors(res || []);
+      const authorsList = Array.isArray(res)
+        ? res
+        : (res && typeof res === "object" && Array.isArray((res as any).data)
+            ? (res as any).data
+            : []);
+      if (!Array.isArray(res) && !(res && typeof res === "object" && Array.isArray((res as any).data))) {
+        message.error("Dữ liệu tác giả không đúng định dạng.");
+      }
+      setAuthors(authorsList);
     } catch (err) {
       console.error("Lỗi khi tải tác giả:", err);
       message.error("Không thể tải danh sách tác giả.");

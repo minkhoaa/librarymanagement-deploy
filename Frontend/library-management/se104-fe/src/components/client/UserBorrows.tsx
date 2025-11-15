@@ -12,6 +12,18 @@ const UserBorrows = () => {
   const [selectedLoan, setSelectedLoan] = useState<ILoanHistory | null>(null);
   const [authorNames, setAuthorNames] = useState<Record<string, string>>({});
 
+  const normalizeLoanHistory = (payload: unknown): ILoanHistory[] => {
+    if (Array.isArray(payload)) return payload as ILoanHistory[];
+    if (
+      payload &&
+      typeof payload === "object" &&
+      Array.isArray((payload as { data?: unknown }).data)
+    ) {
+      return ((payload as { data: ILoanHistory[] }).data) ?? [];
+    }
+    return [];
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       if (!user?.idReader) {
@@ -20,7 +32,18 @@ const UserBorrows = () => {
       }
       try {
         const res = await getLoanSlipHistoryAPI(user.idReader);
-        setLoans(res || []);
+        const loanList = normalizeLoanHistory(res);
+        if (
+          !Array.isArray(res) &&
+          !(
+            res &&
+            typeof res === "object" &&
+            Array.isArray((res as { data?: unknown }).data)
+          )
+        ) {
+          message.error("Danh sách phiếu mượn trả về không đúng định dạng.");
+        }
+        setLoans(loanList);
       } catch (err) {
         message.error("Lỗi khi tải dữ liệu phiếu mượn!");
       } finally {
@@ -35,7 +58,19 @@ const UserBorrows = () => {
     if (authorNames[idBook]) return authorNames[idBook];
     try {
       const res = await getBookAndCommentsByIdAPI("", idBook);
-      const name = res?.data?.authors?.[0]?.nameAuthor || "Không rõ";
+      let bookDetail: any = null;
+      if (Array.isArray(res)) {
+        bookDetail = res[0];
+      } else if (
+        res &&
+        typeof res === "object" &&
+        Array.isArray((res as { data?: unknown }).data)
+      ) {
+        bookDetail = (res as { data: any[] }).data[0];
+      } else {
+        bookDetail = (res as any)?.data ?? res;
+      }
+      const name = bookDetail?.authors?.[0]?.nameAuthor || "Không rõ";
       setAuthorNames((prev) => ({ ...prev, [idBook]: name }));
       return name;
     } catch {
