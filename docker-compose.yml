@@ -18,6 +18,17 @@ services:
     ports:
       - "5433:5432"
 
+  mongo:
+    image: mongo:6
+    container_name: library-mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: LibraryChat
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27018:27017"
+
   backend:
     build:
       context: ./LibraryManagement
@@ -27,6 +38,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      mongo:
+        condition: service_started
     env_file:
       - ./LibraryManagement/env
     environment:
@@ -34,6 +47,9 @@ services:
       PORT: 8080
       ASPNETCORE_URLS: http://+:8080
       CONNECTIONSTRINGS__PostgreSQLConnection: Host=postgres;Port=5432;Database=librarydb;Username=library;Password=librarypass
+      CONNECTIONSTRINGS__MongoDbConnection: mongodb://mongo:27017
+      MONGODB__DATABASENAME: LibraryChat
+      MONGODB__MESSAGESCOLLECTION: Messages
     ports:
       - "8085:8080"
 
@@ -53,3 +69,4 @@ services:
 
 volumes:
   postgres-data:
+  mongo-data:

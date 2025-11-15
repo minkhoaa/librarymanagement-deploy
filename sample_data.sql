@@ -196,7 +196,12 @@ INSERT INTO READER (ID_READER, ID_TYPEREADER, NAME_READER, SEX, ADDRESS, EMAIL, 
     ('DG00009', '8c6032af-7275-4fd4-a32f-289ec7078932', 'Lê Quang Phúc', 'Nam', 'Quận 5, TP.HCM', 'phuc.vip@example.com', '1988-07-07', '0912000009', 'phuc.le', 'hashed-password-9', 0, 'Reader'),
     ('DG00010', '71dfbf98-e39c-44fd-b757-63eb5d7eb363', 'Phạm Đức Mạnh', 'Nam', 'Quận 10, TP.HCM', 'manh.pham@example.com', '1983-10-21', '0912000010', 'manh.pham', 'hashed-password-10', 0, 'Librarian'),
     ('DG00011', '71dfbf98-e39c-44fd-b757-63eb5d7eb363', 'Nguyễn Thanh Hà', 'Nữ', 'TP. Thủ Đức', 'ha.nguyen@example.com', '1985-02-05', '0912000011', 'ha.nguyen', 'hashed-password-11', 0, 'Admin'),
-    ('DG00012', 'c5a21a89-7f6b-4d52-9833-bbf7bcd4c001', 'Đặng Gia Bảo', 'Nam', 'Quận Gò Vấp, TP.HCM', 'bao.dang@example.com', '2001-09-19', '0912000012', 'bao.dang', 'hashed-password-12', 0, 'Reader')
+    ('DG00012', 'c5a21a89-7f6b-4d52-9833-bbf7bcd4c001', 'Đặng Gia Bảo', 'Nam', 'Quận Gò Vấp, TP.HCM', 'bao.dang@example.com', '2001-09-19', '0912000012', 'bao.dang', 'hashed-password-12', 0, 'Reader'),
+    ('DG00026', 'c5a21a89-7f6b-4d52-9833-bbf7bcd4c001', 'Ngô Tường Vy', 'Nữ', 'Quận 2, TP.HCM', 'vy.ngo@example.com', '1999-04-23', '0912000026', 'vy.ngo', 'hashed-password-26', 0, 'Reader'),
+    ('DG00027', '71dfbf98-e39c-44fd-b757-63eb5d7eb363', 'Phan Minh Trí', 'Nam', 'Quận Bình Tân, TP.HCM', 'tri.phan@example.com', '1987-11-30', '0912000027', 'tri.phan', 'hashed-password-27', 0, 'Librarian'),
+    ('DG00028', '3fa85f64-5717-4562-b3fc-2c963f66afa6', 'Đinh Bảo Ngọc', 'Nữ', 'Quận 9, TP.HCM', 'ngoc.dinh@example.com', '1995-08-14', '0912000028', 'ngoc.dinh', 'hashed-password-28', 5000, 'Reader'),
+    ('DG00029', '4b27b24f-d13e-4ea0-8a52-7f3f5ac1564c', 'Trương Quốc Huy', 'Nam', 'Quận 4, TP.HCM', 'huy.truong@example.com', '1991-02-08', '0912000029', 'huy.truong', 'hashed-password-29', 0, 'Reader'),
+    ('DG00030', '8c6032af-7275-4fd4-a32f-289ec7078932', 'Võ Ngọc Hân', 'Nữ', 'Quận Phú Nhuận, TP.HCM', 'han.vo@example.com', '1990-07-01', '0912000030', 'han.vo', 'hashed-password-30', 0, 'Reader')
 ON CONFLICT (ID_READER) DO NOTHING;
 
 INSERT INTO BOOKRECEIPT (ID_BOOKRECEIPT, ID_READER, RECEIVED_DATE) VALUES
@@ -237,6 +242,12 @@ INSERT INTO LOAN_SLIPBOOK (ID_LOANSLIPBOOK, ID_THEBOOK, ID_READER, BORROW_DATE, 
     ('0647cd7e-3f71-4d2c-a4c2-578654dc41d2', 'TB00032', 'DG00011', '2024-02-18', '2024-03-04', 15, 0, TRUE),
     ('a4c27f31-3b5b-41ef-9f8e-2fb9f76380dd', 'TB00017', 'DG00002', '2024-03-10', NULL, 12, 0, FALSE),
     ('5a2deaf7-6437-4528-8a88-e1af80f208ef', 'TB00029', 'DG00008', '2024-02-01', '2024-02-16', 15, 0, TRUE)
+    ,
+    ('af9a4c7f-8d11-49de-8f6d-7151a4551b2e', 'TB00003', 'DG00026', '2024-03-05', NULL, 14, 0, FALSE),
+    ('be4a3fd3-1c54-4e33-b64a-798fb4341f92', 'TB00007', 'DG00027', '2024-02-12', '2024-02-25', 13, 0, TRUE),
+    ('c5fa9f8a-9471-4bde-a408-7c41d5767e59', 'TB00012', 'DG00028', '2024-03-18', NULL, 14, 0, FALSE),
+    ('d4e5aa2c-e7f6-4f48-8234-3fa281a7c451', 'TB00024', 'DG00029', '2024-02-27', '2024-03-10', 12, 0, TRUE),
+    ('e9bd832f-0c8c-48bc-965c-5bc67dea8367', 'TB00031', 'DG00030', '2024-03-08', NULL, 14, 0, FALSE)
 ON CONFLICT (ID_LOANSLIPBOOK) DO NOTHING;
 
 INSERT INTO PENALTY_TICKET (ID_PENALTY, ID_READER, CREATED_DATE, AMOUNT_COLLECTED, AMOUNT_REMAINING) VALUES

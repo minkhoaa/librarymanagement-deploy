@@ -84,23 +84,40 @@ foreach (var directory in envDirectories)
     }
 }
 
-builder.Configuration["ConnectionStrings:PostgreSQLConnection"] = Environment.GetEnvironmentVariable("CONNECTIONSTRINGS__PostgreSQLConnection");
-builder.Configuration["JWT:SecretKey"] = Environment.GetEnvironmentVariable("JWT__SecretKey");
+builder.Configuration["ConnectionStrings:PostgreSQLConnection"] = builder.Configuration["ConnectionStrings:PostgreSQLConnection"]
+    ?? Environment.GetEnvironmentVariable("CONNECTIONSTRINGS__PostgreSQLConnection");
+builder.Configuration["JWT:SecretKey"] = builder.Configuration["JWT:SecretKey"]
+    ?? Environment.GetEnvironmentVariable("JWT__SecretKey");
 
-builder.Configuration["EmailSettings:SmtpServer"] = Environment.GetEnvironmentVariable("EMAILSETTINGS__SMTPSERVER");
-builder.Configuration["EmailSettings:SmtpPort"] = Environment.GetEnvironmentVariable("EMAILSETTINGS__SMTPPORT");
-builder.Configuration["EmailSettings:SenderEmail"] = Environment.GetEnvironmentVariable("EMAILSETTINGS__SENDEREMAIL");
-builder.Configuration["EmailSettings:SenderPassword"] = Environment.GetEnvironmentVariable("EMAILSETTINGS__SENDERPASSWORD");
-builder.Configuration["EmailSettings:EnableSSL"] = Environment.GetEnvironmentVariable("EMAILSETTINGS__ENABLESSL");
+builder.Configuration["EmailSettings:SmtpServer"] = builder.Configuration["EmailSettings:SmtpServer"]
+    ?? Environment.GetEnvironmentVariable("EMAILSETTINGS__SMTPSERVER");
+builder.Configuration["EmailSettings:SmtpPort"] = builder.Configuration["EmailSettings:SmtpPort"]
+    ?? Environment.GetEnvironmentVariable("EMAILSETTINGS__SMTPPORT");
+builder.Configuration["EmailSettings:SenderEmail"] = builder.Configuration["EmailSettings:SenderEmail"]
+    ?? Environment.GetEnvironmentVariable("EMAILSETTINGS__SENDEREMAIL");
+builder.Configuration["EmailSettings:SenderPassword"] = builder.Configuration["EmailSettings:SenderPassword"]
+    ?? Environment.GetEnvironmentVariable("EMAILSETTINGS__SENDERPASSWORD");
+builder.Configuration["EmailSettings:EnableSSL"] = builder.Configuration["EmailSettings:EnableSSL"]
+    ?? Environment.GetEnvironmentVariable("EMAILSETTINGS__ENABLESSL");
 
-builder.Configuration["CloudinarySettings:CloudName"] = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME");
-builder.Configuration["CloudinarySettings:ApiKey"] = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY");
-builder.Configuration["CloudinarySettings:ApiSecret"] = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET");
-builder.Configuration["MongoDB:ConnectionString"] = Environment.GetEnvironmentVariable("CONNECTIONSTRINGS__MongoDbConnection");
-builder.Configuration["MongoDB:DatabaseName"] ??= Environment.GetEnvironmentVariable("MONGODB__DATABASENAME") ?? "LibraryChat";
-builder.Configuration["MongoDB:MessagesCollection"] ??= Environment.GetEnvironmentVariable("MONGODB__MESSAGESCOLLECTION") ?? "Messages";
-builder.Configuration["GOOGLE_SETTINGS:GOOGLE__CLIENT__ID"] = Environment.GetEnvironmentVariable("CLIENT__ID");
-builder.Configuration["GOOGLE_SETTINGS:GOOGLE__CLIENT__SECRET"] = Environment.GetEnvironmentVariable("CLIENT__SECRET");
+builder.Configuration["CloudinarySettings:CloudName"] = builder.Configuration["CloudinarySettings:CloudName"]
+    ?? Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME");
+builder.Configuration["CloudinarySettings:ApiKey"] = builder.Configuration["CloudinarySettings:ApiKey"]
+    ?? Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY");
+builder.Configuration["CloudinarySettings:ApiSecret"] = builder.Configuration["CloudinarySettings:ApiSecret"]
+    ?? Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET");
+builder.Configuration["MongoDB:ConnectionString"] = builder.Configuration["MongoDB:ConnectionString"]
+    ?? Environment.GetEnvironmentVariable("CONNECTIONSTRINGS__MongoDbConnection");
+builder.Configuration["MongoDB:DatabaseName"] = builder.Configuration["MongoDB:DatabaseName"]
+    ?? Environment.GetEnvironmentVariable("MONGODB__DATABASENAME") ?? "LibraryChat";
+builder.Configuration["MongoDB:MessagesCollection"] = builder.Configuration["MongoDB:MessagesCollection"]
+    ?? Environment.GetEnvironmentVariable("MONGODB__MESSAGESCOLLECTION") ?? "Messages";
+builder.Configuration["GOOGLE_SETTINGS:GOOGLE__CLIENT__ID"] = builder.Configuration["GOOGLE_SETTINGS:GOOGLE__CLIENT__ID"]
+    ?? Environment.GetEnvironmentVariable("CLIENT__ID")
+    ?? Environment.GetEnvironmentVariable("GOOGLE__CLIENT__ID");
+builder.Configuration["GOOGLE_SETTINGS:GOOGLE__CLIENT__SECRET"] = builder.Configuration["GOOGLE_SETTINGS:GOOGLE__CLIENT__SECRET"]
+    ?? Environment.GetEnvironmentVariable("CLIENT__SECRET")
+    ?? Environment.GetEnvironmentVariable("GOOGLE__CLIENT__SECRET");
 
 // Connect to MongoDB
 

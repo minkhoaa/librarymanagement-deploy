@@ -72,71 +72,92 @@ namespace LibraryManagement.Service
         public async Task<List<Message>> GetAllMessagesAsync(string userId1, string userId2)
         {
             if (_messages == null) return new List<Message>();
-            var filter = Builders<Message>.Filter.Or(
-                Builders<Message>.Filter.And(
-                    Builders<Message>.Filter.Eq(m => m.SenderId, userId1),
-                    Builders<Message>.Filter.Eq(m => m.ReceiverId, userId2)
-                ),
-                Builders<Message>.Filter.And(
-                    Builders<Message>.Filter.Eq(m => m.SenderId, userId2),
-                    Builders<Message>.Filter.Eq(m => m.ReceiverId, userId1)
-                )
-            );
+            try
+            {
+                var filter = Builders<Message>.Filter.Or(
+                    Builders<Message>.Filter.And(
+                        Builders<Message>.Filter.Eq(m => m.SenderId, userId1),
+                        Builders<Message>.Filter.Eq(m => m.ReceiverId, userId2)
+                    ),
+                    Builders<Message>.Filter.And(
+                        Builders<Message>.Filter.Eq(m => m.SenderId, userId2),
+                        Builders<Message>.Filter.Eq(m => m.ReceiverId, userId1)
+                    )
+                );
 
-            return await _messages.Find(filter)
-                .SortBy(m => m.SentAt)
-                .ToListAsync();
+                return await _messages.Find(filter)
+                    .SortBy(m => m.SentAt)
+                    .ToListAsync();
+            }
+            catch
+            {
+                return new List<Message>();
+            }
         }
 
         public async Task SendMessageAsync(Message message)
         {
             if (_messages == null) return;
-            message.SentAt = DateTime.UtcNow;
-            await _messages.InsertOneAsync(message);
-            await _hubContext.Clients.User(message.ReceiverId)
-                .SendAsync("ReceiveMessage", message.SenderId, message.Content, message.SentAt);
+            try
+            {
+                message.SentAt = DateTime.UtcNow;
+                await _messages.InsertOneAsync(message);
+                await _hubContext.Clients.User(message.ReceiverId)
+                    .SendAsync("ReceiveMessage", message.SenderId, message.Content, message.SentAt);
+            }
+            catch
+            {
+                // swallow to prevent chat from crashing when Mongo is unavailable
+            }
         }
 
         public async Task<List<MessageClient>> getAllMessageClient(string senderId)
         {
             if (_messages == null) return new List<MessageClient>();
             // 1. Lấy toàn bộ PartnerId unique chỉ với 1 truy vấn
-            var userIds = await _messages.Aggregate()
-                .Match(m => m.SenderId == senderId || m.ReceiverId == senderId)
-                .Project(m => new
-                {
-                    PartnerId = m.SenderId == senderId ? m.ReceiverId : m.SenderId
-                })
-                .Group(x => x.PartnerId, g => new { UserId = g.Key })
-                .ToListAsync();
+            try
+            {
+                var userIds = await _messages.Aggregate()
+                    .Match(m => m.SenderId == senderId || m.ReceiverId == senderId)
+                    .Project(m => new
+                    {
+                        PartnerId = m.SenderId == senderId ? m.ReceiverId : m.SenderId
+                    })
+                    .Group(x => x.PartnerId, g => new { UserId = g.Key })
+                    .ToListAsync();
 
-            var allUserIds = userIds
-                .Select(x => x.UserId)
-                .Where(id => !string.IsNullOrEmpty(id) && id != senderId)
-                .ToList();
+                var allUserIds = userIds
+                    .Select(x => x.UserId)
+                    .Where(id => !string.IsNullOrEmpty(id) && id != senderId)
+                    .ToList();
 
-            if (allUserIds.Count == 0)
+                if (allUserIds.Count == 0)
+                    return new List<MessageClient>();
+
+                // 2. Truy vấn nhanh SQL chỉ lấy trường cần
+                var userInfos = await _context.Readers
+                    .AsNoTracking()
+                    .Where(x => allUserIds.Contains(x.IdReader))
+                    .Select(x => new { x.IdReader, x.NameReader })
+                    .ToListAsync();
+
+                var userInfoDict = userInfos.ToDictionary(x => x.IdReader, x => x.NameReader);
+
+                var result = allUserIds
+                    .Select(id => new MessageClient
+                    {
+                        ReceiveUserId = id,
+                        ReceiveUserName = userInfoDict.TryGetValue(id, out var name) ? name : "(Không rõ tên)",
+                        AvatarUrl = _context.Images.AsNoTracking().Where(x=>x.IdReader == id).Select(x=>x.Url).FirstOrDefault() ?? string.Empty,
+                    })
+                    .ToList();
+
+                return result;
+            }
+            catch
+            {
                 return new List<MessageClient>();
-
-            // 2. Truy vấn nhanh SQL chỉ lấy trường cần
-            var userInfos = await _context.Readers
-                .AsNoTracking()
-                .Where(x => allUserIds.Contains(x.IdReader))
-                .Select(x => new { x.IdReader, x.NameReader })
-                .ToListAsync();
-
-            var userInfoDict = userInfos.ToDictionary(x => x.IdReader, x => x.NameReader);
-
-            var result = allUserIds
-                .Select(id => new MessageClient
-                {
-                    ReceiveUserId = id,
-                    ReceiveUserName = userInfoDict.TryGetValue(id, out var name) ? name : "(Không rõ tên)",
-                    AvatarUrl = _context.Images.AsNoTracking().Where(x=>x.IdReader == id).Select(x=>x.Url).FirstOrDefault() ?? string.Empty,
-                })
-                .ToList();
-
-            return result;
+            }
         }
 
 
