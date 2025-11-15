@@ -119,11 +119,14 @@ namespace LibraryManagement.Controllers
             return Ok(result);
         }
         [HttpGet("getbooksindetail")]
-      
-        public async Task<IActionResult> getBooksAndComments()
+        public async Task<IActionResult> getBooksAndComments([FromQuery] string? readerId)
         {
             var userID = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userID)) return NotFound("Không tìm thấy thông tin người dùng");
+            if (string.IsNullOrEmpty(userID))
+            {
+                userID = readerId;
+            }
+            if (string.IsNullOrEmpty(userID)) return Unauthorized("Vui lòng đăng nhập");
             var result = await _bookService.getAllBooksInDetail(userID);
             return (result == null) ? Unauthorized("Vui lòng đăng nhập") : Ok(result);
         }

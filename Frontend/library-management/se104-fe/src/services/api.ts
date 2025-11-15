@@ -174,7 +174,10 @@ export const getListReader = () => {
   return axios.get<IReader[]>("/api/reader/Reader/list_reader");
 };
 export const getAllBooksAndCommentsAPI = () => {
-  return axios.get<IBook[]>("/api/Book/getbooksindetail");
+  const readerId = localStorage.getItem("idUser");
+  return axios.get<IBook[]>("/api/Book/getbooksindetail", {
+    params: readerId ? { readerId } : undefined,
+  });
 };
 export const getLoanSlipHistoryAPI = (idUser: string) => {
   const url = `/api/LoanSlipBook/getloansliphistory?idUser=${idUser}`;
